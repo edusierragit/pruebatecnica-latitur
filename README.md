@@ -1,40 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Blog Frontend - Next.js + Strapi
 
-## Getting Started
+## 📋 Descripción
+Proyecto de blog que integra un frontend en Next.js con un backend en Strapi, desarrollado como parte de una prueba técnica. Permite listar y crear posts de blog con un sistema de paginación.
 
-First, run the development server:
+## 🚀 Características Principales
+- ✨ Listado de posts con paginación
+- 📝 Creación de nuevos posts
+- 🔄 Actualización automática de la lista
+- 📱 Diseño responsive
+- ✅ Validación de formularios
 
+## 🛠️ Tecnologías
+- Next.js 14.1.0
+- TypeScript
+- SWR para fetching de datos
+- Formik + Yup para formularios
+- Tailwind CSS para estilos
+- React DatePicker
+- Axios
+
+## 🏃‍♂️ Inicio Rápido
+
+1. **Clonar el repositorio**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <url-repositorio>
+cd frontend
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Instalar dependencias**
+```bash
+npm install
+```
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+3. **Configurar variables de entorno**
+```bash
+cp .env.example .env.local
+```
+Editar `.env.local`:
+```
+NEXT_PUBLIC_API_URL=http://localhost:1337
+```
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+4. **Iniciar el servidor de desarrollo**
+```bash
+npm run dev
+```
+Visitar `http://localhost:3000/blog`
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## 📁 Estructura del Proyecto
+```
+frontend/
+├── hooks/
+│   └── useBlogPosts.ts    # Hook para manejo de posts
+├── pages/
+│   ├── blog/
+│   │   ├── index.tsx      # Lista de posts
+│   │   └── new.tsx        # Formulario de creación
+│   └── _app.tsx
+├── types/
+│   └── blog.ts            # Interfaces y tipos
+└── package.json
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 💡 Funcionalidades Detalladas
 
-## Learn More
+### 📋 Listado de Posts (`/blog`)
+- Vista en grid responsive (2 columnas en tablet, 3 en desktop)
+- Paginación (6 posts por página)
+- Actualización automática al crear posts
 
-To learn more about Next.js, take a look at the following resources:
+### ✏️ Creación de Posts (`/blog/new`)
+- Formulario validado con Formik y Yup
+- Selector de fecha con DatePicker
+- Feedback visual de éxito/error
+- Redirección automática post-creación
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+## ⚙️ Configuración Necesaria
+- Backend Strapi corriendo en `http://localhost:1337`
+- Modelo BlogPost configurado
+- Permisos de API habilitados
+- ID de autor hardcodeado (4)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📝 Notas de Desarrollo
+- Uso de SWR para caché y revalidación automática
+- DTOs para transformación de datos
+- Manejo de errores centralizado
+- Tipado estricto con TypeScript
 
-## Deploy on Vercel
+## 👤 Autor
+[Tu Nombre]
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+## 📄 Licencia
+MIT
