@@ -7,17 +7,22 @@ import DatePicker from 'react-datepicker';
 import { useState } from 'react';
 import Link from 'next/link';
 import { createPost, useBlogPosts } from '../../hooks/useBlogPosts';
+import { CreateBlogPostDTO } from '../../types/blog';
 import "react-datepicker/dist/react-datepicker.css";
+
+const AUTHOR_ID = 4; // Constante para el ID hardcodeado
 
 const validationSchema = Yup.object({
   title: Yup.string()
     .required('El título es requerido')
-    .min(3, 'El título debe tener al menos 3 caracteres'),
+    .min(3, 'El título debe tener al menos 3 caracteres')
+    .max(100, 'El título no puede exceder los 100 caracteres'),
   content: Yup.string()
     .required('El contenido es requerido')
     .min(10, 'El contenido debe tener al menos 10 caracteres'),
   publicationDate: Yup.date()
     .required('La fecha de publicación es requerida')
+    .min(new Date(), 'La fecha debe ser futura')
 });
 
 export default function NewBlogPost() {
@@ -37,24 +42,20 @@ export default function NewBlogPost() {
       try {
         setSubmitError(null);
         
-        const formattedDate = values.publicationDate.toISOString().split('T')[0];
-        await createPost({
+        const dto: CreateBlogPostDTO = {
           title: values.title,
           content: values.content,
-          publicationDate: formattedDate,
-          author: {
-            id: 4,
-            name: 'Autor de Prueba',
-            email: 'autor@test.com'
-          }
-        }, mutate);
-        
+          publicationDate: values.publicationDate.toISOString().split('T')[0],
+          author: AUTHOR_ID
+        };
+
+        await createPost(dto, mutate);
         setSubmitSuccess(true);
-        await mutate();
+        await mutate(); // Forzamos actualización de la lista
         router.push('/blog');
       } catch (error) {
         console.error('Error:', error);
-        setSubmitError('Error al crear el post');
+        setSubmitError('Error al crear el post. Por favor, intente nuevamente.');
       }
     },
   });

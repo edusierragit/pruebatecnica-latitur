@@ -15,8 +15,8 @@ export interface BlogPost {
 export interface CreateBlogPostDTO {
   title: string;
   content: string;
-  publicationDate: string; // Formato YYYY-MM-DD
-  author: number; // ID hardcodeado del autor
+  publicationDate: string;
+  author: number; // Solo el ID para crear
 }
 
 export interface StrapiResponse<T = any> {
