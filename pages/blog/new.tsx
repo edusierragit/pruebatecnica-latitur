@@ -1,10 +1,12 @@
+'use client';
+
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useRouter } from 'next/router';
 import DatePicker from 'react-datepicker';
 import { useState } from 'react';
 import Link from 'next/link';
-import { blogService } from '../../services/blogService';
+import { createPost, useBlogPosts } from '../../hooks/useBlogPosts';
 import "react-datepicker/dist/react-datepicker.css";
 
 const validationSchema = Yup.object({
@@ -22,6 +24,7 @@ export default function NewBlogPost() {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const { mutate } = useBlogPosts();
 
   const formik = useFormik({
     initialValues: {
@@ -33,27 +36,25 @@ export default function NewBlogPost() {
     onSubmit: async (values) => {
       try {
         setSubmitError(null);
-        console.log('Valores del formulario:', values);
         
         const formattedDate = values.publicationDate.toISOString().split('T')[0];
-        console.log('Fecha formateada:', formattedDate);
-        
-        const postData = {
-          ...values,
+        await createPost({
+          title: values.title,
+          content: values.content,
           publicationDate: formattedDate,
-          author: 4 // ID del autor que vemos en los logs
-        };
-        console.log('Datos a enviar:', postData);
-
-        await blogService.createPost(postData);
+          author: {
+            id: 4,
+            name: 'Autor de Prueba',
+            email: 'autor@test.com'
+          }
+        }, mutate);
         
         setSubmitSuccess(true);
-        setTimeout(() => {
-          router.push('/blog');
-        }, 2000);
+        await mutate();
+        router.push('/blog');
       } catch (error) {
-        console.error('Error en submit:', error);
-        setSubmitError('Error al crear el post. Por favor, intente nuevamente.');
+        console.error('Error:', error);
+        setSubmitError('Error al crear el post');
       }
     },
   });
@@ -73,8 +74,14 @@ export default function NewBlogPost() {
           </div>
 
           {submitSuccess && (
-            <div className="mb-6 p-4 bg-green-100 text-green-700 rounded-md">
-              ¡Post creado exitosamente! Redirigiendo...
+            <div className="mb-6 p-4 bg-green-100 text-green-700 rounded-md flex items-center justify-between">
+              <span>¡Post creado exitosamente!</span>
+              <Link 
+                href="/blog"
+                className="text-green-800 hover:text-green-900 font-medium"
+              >
+                Ver todos los posts →
+              </Link>
             </div>
           )}
 
@@ -84,7 +91,14 @@ export default function NewBlogPost() {
             </div>
           )}
 
-          <form onSubmit={formik.handleSubmit} className="space-y-6">
+          <form 
+            onSubmit={(e) => {
+              console.log('Form submitted');
+              e.preventDefault();
+              formik.handleSubmit(e);
+            }} 
+            className="space-y-6"
+          >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Título
@@ -92,7 +106,7 @@ export default function NewBlogPost() {
               <input
                 type="text"
                 {...formik.getFieldProps('title')}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
               />
               {formik.touched.title && formik.errors.title && (
                 <div className="mt-1 text-sm text-red-600">{formik.errors.title}</div>
@@ -106,7 +120,7 @@ export default function NewBlogPost() {
               <textarea
                 rows={6}
                 {...formik.getFieldProps('content')}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
               />
               {formik.touched.content && formik.errors.content && (
                 <div className="mt-1 text-sm text-red-600">{formik.errors.content}</div>
@@ -120,7 +134,7 @@ export default function NewBlogPost() {
               <DatePicker
                 selected={formik.values.publicationDate}
                 onChange={(date) => formik.setFieldValue('publicationDate', date)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 dateFormat="yyyy-MM-dd"
               />
             </div>
@@ -129,6 +143,7 @@ export default function NewBlogPost() {
               <button
                 type="submit"
                 disabled={formik.isSubmitting}
+                onClick={() => console.log('Button clicked')}
                 className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
               >
                 {formik.isSubmitting ? 'Creando...' : 'Crear Post'}
